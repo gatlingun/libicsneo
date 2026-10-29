@@ -135,10 +135,10 @@ void PCAP::Find(std::vector<FoundDevice>& found) {
 		auto bs = requestPacket.getBytestream();
 		pcap_sendpacket(iface.fp, bs.data(), (int)bs.size());
 
-		auto timeout = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(50);
+		auto timeout = std::chrono::steady_clock::now() + std::chrono::milliseconds(50);
 		constexpr const size_t TempBufferSize = 4096;
 		RingBuffer tempBuffer(TempBufferSize);
-		while(std::chrono::high_resolution_clock::now() <= timeout) { // Wait up to 50ms for the response
+		while(std::chrono::steady_clock::now() <= timeout) { // Wait up to 50ms for the response
 			struct pcap_pkthdr* header;
 			const uint8_t* data;
 			auto res = pcap_next_ex(iface.fp, &header, &data);
@@ -246,7 +246,7 @@ bool PCAP::open() {
 	// Create threads
 	readThread = std::thread(&PCAP::readTask, this);
 	writeThread = std::thread(&PCAP::writeTask, this);
-	
+
 	return true;
 }
 
